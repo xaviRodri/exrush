@@ -1,0 +1,26 @@
+name: Elixir CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup beam
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.12" # Define the elixir version [required]
+          otp-version: "24" # Define the OTP version [required]
+      - name: Install Dependencies
+        run: mix deps.get
+      - name: Elixir Formatter - Format check
+        run: mix format --check-formatted
+      - name: Credo - Code Analysis
+        run: mix credo
+      - name: Coverall - Test Coverage
+        run: mix coveralls
