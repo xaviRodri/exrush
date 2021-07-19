@@ -1,7 +1,9 @@
 /_build
+/assets/node_modules
 /cover
 /deps
 /doc
+/priv/static
 /.fetch
 erl_crash.dump
 *.ez
