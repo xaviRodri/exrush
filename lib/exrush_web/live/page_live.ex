@@ -1,4 +1,6 @@
 defmodule ExrushWeb.PageLive do
+  @moduledoc false
+
   use ExrushWeb, :live_view
 
   @impl true
