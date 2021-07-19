@@ -5,12 +5,19 @@ defmodule Exrush.MixProject do
     [
       app: :exrush,
       version: "0.1.0",
-      elixir: "~> 1.7",
+      elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
@@ -36,13 +43,17 @@ defmodule Exrush.MixProject do
       {:phoenix, "~> 1.5.9"},
       {:phoenix_live_view, "~> 0.15.1"},
       {:floki, ">= 0.30.0", only: :test},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_html, "~> 2.14"},
+      {:phoenix_live_reload, "~> 1.3", only: :dev},
       {:phoenix_live_dashboard, "~> 0.4"},
-      {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
-      {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:telemetry_metrics, "~> 0.6"},
+      {:telemetry_poller, "~> 0.5"},
+      {:jason, "~> 1.2"},
+      {:plug_cowboy, "~> 2.5"},
+
+      # Code Style and testing
+      {:credo, "~> 1.5", only: [:dev]},
+      {:excoveralls, "~> 0.14", only: [:dev, :test]}
     ]
   end
 
