@@ -12,7 +12,9 @@ defmodule Exrush.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Exrush.PubSub},
       # Start the Endpoint (http/https)
-      ExrushWeb.Endpoint
+      ExrushWeb.Endpoint,
+      # Start the RushingReader to feed the data
+      Exrush.RushingReader
       # Start a worker by calling: Exrush.Worker.start_link(arg)
       # {Exrush.Worker, arg}
     ]
