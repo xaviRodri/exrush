@@ -3,6 +3,7 @@
         "lib/exrush_web.ex",
         "lib/exrush/application.ex",
         "lib/exrush_web/channels",
+        "lib/exrush_web/endpoint.ex",
         "lib/exrush_web/telemetry.ex",
         "lib/exrush_web/router.ex",
         "lib/exrush_web/views/error_helpers.ex",
