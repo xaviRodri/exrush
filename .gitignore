@@ -4,6 +4,7 @@
 /deps
 /doc
 /priv/static
+/priv/csv
 /.fetch
 erl_crash.dump
 *.ez

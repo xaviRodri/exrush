@@ -18,7 +18,7 @@ defmodule Exrush do
   end
 
   @doc """
-  Filters the rushing data players by its player.
+  Filters the rushing data by player.
   Uses a simple algorithm that looks for a containing match in the data.
   """
   @spec player_filter(binary()) :: list(map())

@@ -50,6 +50,7 @@ defmodule Exrush.MixProject do
       {:telemetry_poller, "~> 0.5"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
+      {:csv, "~> 2.4"},
 
       # Code Style and testing
       {:credo, "~> 1.5", only: [:dev]},
