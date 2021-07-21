@@ -58,8 +58,8 @@ defmodule ExrushTest do
       assert List.first(result_asc)["TD"] <= List.last(result_asc)["TD"]
       assert List.first(result_desc)["TD"] >= List.last(result_desc)["TD"]
 
-      assert List.first(result_asc)["Lng"] |> parse_value() <=
-               List.last(result_asc)["Lng"] |> parse_value()
+      assert List.first(result_asc_lng)["Lng"] |> parse_value() <=
+               List.last(result_asc_lng)["Lng"] |> parse_value()
     end
 
     test "Attempting to sort by a non-allowed field or filter will return an empty list" do
