@@ -52,5 +52,7 @@ defmodule Exrush do
   end
 
   defp parse_sort_value(value) when is_integer(value), do: value
-  defp parse_sort_value(value) when is_binary(value), do: Integer.parse(value) |> elem(0)
+
+  defp parse_sort_value(value) when is_binary(value),
+    do: String.replace(value, ",", ".") |> Float.parse() |> elem(0)
 end
