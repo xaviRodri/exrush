@@ -41,12 +41,12 @@ defmodule Exrush do
 
   def sort(_field, _filter), do: []
 
-  defp sort(rushing_list, field, :asc) do
+  def sort(rushing_list, field, :asc) do
     rushing_list
     |> Enum.sort(&(parse_sort_value(&1[field]) <= parse_sort_value(&2[field])))
   end
 
-  defp sort(rushing_list, field, :desc) do
+  def sort(rushing_list, field, :desc) do
     rushing_list
     |> Enum.sort(&(parse_sort_value(&1[field]) >= parse_sort_value(&2[field])))
   end

@@ -17,7 +17,7 @@ defmodule ExrushWeb.Router do
   scope "/", ExrushWeb do
     pipe_through(:browser)
 
-    live("/", PageLive, :index)
+    live("/", PageLive)
   end
 
   # Other scopes may use custom stacks.
