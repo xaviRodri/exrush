@@ -18,6 +18,12 @@ defmodule Exrush do
   end
 
   @doc """
+  Retrieves the rushing data from the reader process.
+  """
+  @spec get_rushing() :: [map()]
+  def get_rushing, do: Exrush.RushingReader.get_rushing()
+
+  @doc """
   Filters the rushing data by player.
   Uses a simple algorithm that looks for a containing match in the data.
   """

@@ -7,6 +7,14 @@
       <input type="text" name="q" value="<%= @query %>" placeholder="Player name search" list="data" autocomplete="off"/>
       <button type="submit" phx-disable-with="Searching...">Search</button>
     </form>
+
+    <%= f = form_for :download, Routes.page_path(@socket, :download), method: "get"%>
+      <%= hidden_input f, :search,  value: @query %>
+      <%= hidden_input f, :sort_field, value: @sort_field %>
+      <%= hidden_input f, :sort_order, value: @sort_order %>
+
+      <%= submit "Download CSV", class: "btn"%>
+    </form>
   </div>
 
   <%= if @data != [] do%>
@@ -15,7 +23,7 @@
         <tr>
           <%= for {col, sorteable} <- @cols do %>
             <%= if sorteable do %>
-              <th><%= live_patch col<>"(s*)", to: Routes.live_path(@socket, ExrushWeb.PageLive, %{sort_by: col, order: :asc}) %></th>
+              <th><%= live_patch col<>"(s*)", to: Routes.live_path(@socket, ExrushWeb.PageLive, %{sort_by: col}) %></th>
             <% else %>
               <th><%= col %></th>
             <% end %>

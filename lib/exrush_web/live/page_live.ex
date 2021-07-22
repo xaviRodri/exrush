@@ -26,7 +26,7 @@ defmodule ExrushWeb.PageLive do
     {:ok,
      assign(socket,
        query: "",
-       data: get_rushing_data(),
+       data: Exrush.get_rushing(),
        cols: @cols,
        sort_by: nil,
        sort_field: nil,
@@ -36,7 +36,7 @@ defmodule ExrushWeb.PageLive do
 
   @impl true
   def handle_event("search", %{"q" => ""}, socket) do
-    {:noreply, assign(socket, data: get_rushing_data(), query: "")}
+    {:noreply, assign(socket, data: Exrush.get_rushing(), query: "")}
   end
 
   @impl true
@@ -62,7 +62,7 @@ defmodule ExrushWeb.PageLive do
         {:noreply,
          socket
          |> put_flash(:error, "Filtering error. View restarted.")
-         |> assign(data: get_rushing_data(), sort_field: nil)}
+         |> assign(data: Exrush.get_rushing(), sort_field: nil)}
 
       data ->
         {:noreply,
@@ -78,8 +78,6 @@ defmodule ExrushWeb.PageLive do
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
   end
-
-  defp get_rushing_data, do: Exrush.RushingReader.get_rushing()
 
   defp swap_order(sort_field, :asc) when sort_field == nil, do: :desc
   defp swap_order(_sort_field, :asc), do: :desc
