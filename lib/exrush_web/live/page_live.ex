@@ -20,12 +20,18 @@ defmodule ExrushWeb.PageLive do
     {"40+", false},
     {"FUM", false}
   ]
-  @sort_order %{"Yds" => :asc, "TD" => :asc, "Lng" => :asc}
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
-     assign(socket, query: "", data: get_rushing_data(), cols: @cols, sort_order: @sort_order)}
+     assign(socket,
+       query: "",
+       data: get_rushing_data(),
+       cols: @cols,
+       sort_by: nil,
+       sort_field: nil,
+       sort_order: :asc
+     )}
   end
 
   @impl true
@@ -49,16 +55,22 @@ defmodule ExrushWeb.PageLive do
 
   @impl true
   def handle_params(%{"sort_by" => sort_by}, _uri, socket) do
-    case Exrush.sort(socket.assigns.data, sort_by, socket.assigns.sort_order[sort_by]) do
+    order = if socket.assigns.sort_field != sort_by, do: :asc, else: socket.assigns.sort_order
+
+    case Exrush.sort(socket.assigns.data, sort_by, order) do
       [] ->
         {:noreply,
          socket
          |> put_flash(:error, "Filtering error. View restarted.")
-         |> assign(data: get_rushing_data())}
+         |> assign(data: get_rushing_data(), sort_field: nil)}
 
       data ->
         {:noreply,
-         assign(socket, data: data, sort_order: swap_order(socket.assigns.sort_order, sort_by))}
+         assign(socket,
+           data: data,
+           sort_field: sort_by,
+           sort_order: swap_order(socket.assigns.sort_field, order)
+         )}
     end
   end
 
@@ -69,10 +81,7 @@ defmodule ExrushWeb.PageLive do
 
   defp get_rushing_data, do: Exrush.RushingReader.get_rushing()
 
-  defp swap_order(order_map, field) do
-    case order_map[field] do
-      :asc -> Map.put(order_map, field, :desc)
-      :desc -> Map.put(order_map, field, :asc)
-    end
-  end
+  defp swap_order(sort_field, :asc) when sort_field == nil, do: :desc
+  defp swap_order(_sort_field, :asc), do: :desc
+  defp swap_order(_sort_field, :desc), do: :asc
 end
