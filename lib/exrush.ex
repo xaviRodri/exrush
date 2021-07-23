@@ -5,7 +5,7 @@ defmodule Exrush do
 
   @allowed_sort_fields ["Yds", "Lng", "TD"]
   @allowed_filters [:asc, :desc]
-  @rushing_path "priv/rushing.json"
+  @rushing_path Application.compile_env!(:exrush, :json_path)
 
   @doc """
   Reads and decodes the rushing JSON file.
