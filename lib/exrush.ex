@@ -3,7 +3,7 @@ defmodule Exrush do
   Exrush is the module that contains the main business logic.
   """
 
-  @allowed_sort_fields ["Yds", "Lng", "TD"]
+  @allowed_sort_fields ["Yds", "Lng", "TD", nil]
   @allowed_filters [:asc, :desc]
   @rushing_path Application.compile_env!(:exrush, :json_path)
 
