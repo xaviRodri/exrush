@@ -20,23 +20,20 @@ defmodule ExrushWeb.PageLive do
     {"40+", false},
     {"FUM", false}
   ]
+  @default_page_config %{page: 1, page_size: 10}
 
   @impl true
   def mount(_params, _session, socket) do
     {:ok,
      assign(socket,
        query: "",
-       data: Exrush.get_rushing(),
        cols: @cols,
+       page: Exrush.get_rushing() |> Exrush.paginate(@default_page_config),
+       page_config: @default_page_config,
        sort_by: nil,
        sort_field: nil,
-       sort_order: :asc
+       sort_order: nil
      )}
-  end
-
-  @impl true
-  def handle_event("search", %{"q" => ""}, socket) do
-    {:noreply, assign(socket, data: Exrush.get_rushing(), query: "")}
   end
 
   @impl true
@@ -46,32 +43,55 @@ defmodule ExrushWeb.PageLive do
         {:noreply,
          socket
          |> put_flash(:error, "No players found matching \"#{query}\"")
-         |> assign(data: [], query: query)}
+         |> assign(page: empty_page(socket.assigns.page), query: query)}
 
       data ->
-        {:noreply, assign(socket, data: data, query: query)}
+        {:noreply,
+         assign(socket,
+           page: data |> Exrush.paginate(@default_page_config),
+           query: query,
+           sort_field: nil,
+           sort_order: nil
+         )}
     end
   end
 
   @impl true
   def handle_params(%{"sort_by" => sort_by}, _uri, socket) do
-    order = if socket.assigns.sort_field != sort_by, do: :asc, else: socket.assigns.sort_order
+    order =
+      if socket.assigns.sort_field != sort_by,
+        do: :asc,
+        else: swap_order(socket.assigns.sort_order)
 
-    case Exrush.sort(socket.assigns.data, sort_by, order) do
+    Exrush.player_filter(socket.assigns.query)
+    |> Exrush.sort(sort_by, order)
+    |> case do
       [] ->
         {:noreply,
          socket
          |> put_flash(:error, "Filtering error. View restarted.")
-         |> assign(data: Exrush.get_rushing(), sort_field: nil)}
+         |> assign(
+           page: Exrush.get_rushing() |> Exrush.paginate(@default_page_config),
+           sort_field: nil
+         )}
 
       data ->
         {:noreply,
          assign(socket,
-           data: data,
+           page: data |> Exrush.paginate(@default_page_config),
            sort_field: sort_by,
-           sort_order: swap_order(socket.assigns.sort_field, order)
+           sort_order: order
          )}
     end
+  end
+
+  def handle_params(%{"page" => page_number}, _uri, socket) do
+    page =
+      Exrush.player_filter(socket.assigns.query)
+      |> Exrush.sort(socket.assigns.sort_field, socket.assigns.sort_order)
+      |> Exrush.paginate(%{page: page_number, page_size: socket.assigns.page.page_size})
+
+    {:noreply, assign(socket, page: page)}
   end
 
   @impl true
@@ -79,7 +99,10 @@ defmodule ExrushWeb.PageLive do
     {:noreply, socket}
   end
 
-  defp swap_order(sort_field, :asc) when sort_field == nil, do: :desc
-  defp swap_order(_sort_field, :asc), do: :desc
-  defp swap_order(_sort_field, :desc), do: :asc
+  defp empty_page(%{page_size: page_size}),
+    do: %{entries: [], page_number: 1, page_size: page_size, total_pages: 1}
+
+  defp swap_order(nil), do: :asc
+  defp swap_order(:asc), do: :desc
+  defp swap_order(:desc), do: :asc
 end

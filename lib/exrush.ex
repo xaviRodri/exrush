@@ -23,11 +23,18 @@ defmodule Exrush do
   @spec get_rushing() :: [map()]
   def get_rushing, do: Exrush.RushingReader.get_rushing()
 
+  def paginate(data_list, %{page: _page_number, page_size: _page_size} = config),
+    do: Scrivener.paginate(data_list, config)
+
   @doc """
   Filters the rushing data by player.
   Uses a simple algorithm that looks for a containing match in the data.
+
+  If the query filter is empty, will return all the entries.
   """
   @spec player_filter(binary()) :: list(map())
+  def player_filter(""), do: Exrush.RushingReader.get_rushing()
+
   def player_filter(search) when is_binary(search) do
     Exrush.RushingReader.get_rushing()
     |> Enum.filter(&String.contains?(&1["Player"] |> String.downcase(), String.downcase(search)))
@@ -46,6 +53,8 @@ defmodule Exrush do
   end
 
   def sort(_field, _filter), do: []
+
+  def sort(rushing_list, nil, _), do: rushing_list
 
   def sort(rushing_list, field, :asc) do
     rushing_list

@@ -4,7 +4,7 @@
 
   <div>
     <form phx-submit="search">
-      <input type="text" name="q" value="<%= @query %>" placeholder="Player name search" list="data" autocomplete="off"/>
+      <input type="text" name="q" value="<%= @query %>" placeholder="Player name search" autocomplete="off"/>
       <button type="submit" phx-disable-with="Searching...">Search</button>
     </form>
 
@@ -17,7 +17,7 @@
     </form>
   </div>
 
-  <%= if @data != [] do%>
+  <%= if @page.entries != [] do%>
     <table>
       <thead>
         <tr>
@@ -31,7 +31,7 @@
         </tr>
       </thead>
 
-        <%= for item <- @data do %>
+        <%= for item <- @page.entries do %>
           <tbody>
             <%= for {col, _} <- @cols do %>
               <td><%= item[col] %></td>
@@ -42,4 +42,12 @@
   <% else %>
     <h2>No results</h2>
   <% end %>
+
+  <%= if @page.page_number > 1 do %>
+    <%= live_patch "Prev Page", to: Routes.live_path(@socket, ExrushWeb.PageLive, page: @page.page_number - 1), class: "button", style: "margin-right: 10px;" %>
+  <% end %>
+  <%= if @page.page_number < @page.total_pages do %>
+    <%= live_patch "Next Page", to: Routes.live_path(@socket, ExrushWeb.PageLive, page: @page.page_number + 1), class: "button", style: "margin-left: 10px;" %>
+  <% end %>
+
 </section>
