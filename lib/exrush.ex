@@ -23,6 +23,10 @@ defmodule Exrush do
   @spec get_rushing() :: [map()]
   def get_rushing, do: Exrush.RushingReader.get_rushing()
 
+  @doc """
+  Paginates a list of data using `Scrivener.List`.
+  """
+  @spec paginate(list(), %{page: integer(), page_size: integer()}) :: Scrivener.Page.t()
   def paginate(data_list, %{page: _page_number, page_size: _page_size} = config),
     do: Scrivener.paginate(data_list, config)
 
