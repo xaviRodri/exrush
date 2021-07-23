@@ -3,9 +3,9 @@ defmodule Exrush do
   Exrush is the module that contains the main business logic.
   """
 
-  @allowed_sort_fields ["Yds", "Lng", "TD"]
+  @allowed_sort_fields ["Yds", "Lng", "TD", nil]
   @allowed_filters [:asc, :desc]
-  @rushing_path "priv/rushing.json"
+  @rushing_path Application.compile_env!(:exrush, :json_path)
 
   @doc """
   Reads and decodes the rushing JSON file.
@@ -18,10 +18,27 @@ defmodule Exrush do
   end
 
   @doc """
+  Retrieves the rushing data from the reader process.
+  """
+  @spec get_rushing() :: [map()]
+  def get_rushing, do: Exrush.RushingReader.get_rushing()
+
+  @doc """
+  Paginates a list of data using `Scrivener.List`.
+  """
+  @spec paginate(list(), %{page: integer(), page_size: integer()}) :: Scrivener.Page.t()
+  def paginate(data_list, %{page: _page_number, page_size: _page_size} = config),
+    do: Scrivener.paginate(data_list, config)
+
+  @doc """
   Filters the rushing data by player.
   Uses a simple algorithm that looks for a containing match in the data.
+
+  If the query filter is empty, will return all the entries.
   """
   @spec player_filter(binary()) :: list(map())
+  def player_filter(""), do: Exrush.RushingReader.get_rushing()
+
   def player_filter(search) when is_binary(search) do
     Exrush.RushingReader.get_rushing()
     |> Enum.filter(&String.contains?(&1["Player"] |> String.downcase(), String.downcase(search)))
@@ -41,16 +58,20 @@ defmodule Exrush do
 
   def sort(_field, _filter), do: []
 
-  defp sort(rushing_list, field, :asc) do
+  def sort(rushing_list, nil, _), do: rushing_list
+
+  def sort(rushing_list, field, :asc) do
     rushing_list
     |> Enum.sort(&(parse_sort_value(&1[field]) <= parse_sort_value(&2[field])))
   end
 
-  defp sort(rushing_list, field, :desc) do
+  def sort(rushing_list, field, :desc) do
     rushing_list
     |> Enum.sort(&(parse_sort_value(&1[field]) >= parse_sort_value(&2[field])))
   end
 
   defp parse_sort_value(value) when is_integer(value), do: value
-  defp parse_sort_value(value) when is_binary(value), do: Integer.parse(value) |> elem(0)
+
+  defp parse_sort_value(value) when is_binary(value),
+    do: String.replace(value, ",", ".") |> Float.parse() |> elem(0)
 end

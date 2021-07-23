@@ -1,48 +1,54 @@
-<section class="phx-hero">
-  <h1>Welcome to Phoenix!</h1>
-  <p>Peace of mind from prototype to production</p>
+<section class="phx-hero" style="width: fit-content; margin: auto;">
+  <h1>Welcome to The Score!</h1>
+  <p>Here you will find all the football rushing information</p>
 
-  <form phx-change="suggest" phx-submit="search">
-    <input type="text" name="q" value="<%= @query %>" placeholder="Live dependency search" list="results" autocomplete="off"/>
-    <datalist id="results">
-      <%= for {app, _vsn} <- @results do %>
-        <option value="<%= app %>"><%= app %></option>
-      <% end %>
-    </datalist>
-    <button type="submit" phx-disable-with="Searching...">Go to Hexdocs</button>
-  </form>
-</section>
+  <div>
+    <form phx-submit="search">
+      <input type="text" name="q" value="<%= @query %>" placeholder="Player name search" autocomplete="off"/>
+      <button type="submit" phx-disable-with="Searching...">Search</button>
+    </form>
 
-<section class="row">
-  <article class="column">
-    <h2>Resources</h2>
-    <ul>
-      <li>
-        <a href="https://hexdocs.pm/phoenix/overview.html">Guides &amp; Docs</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix">Source</a>
-      </li>
-      <li>
-        <a href="https://github.com/phoenixframework/phoenix/blob/v1.5/CHANGELOG.md">v1.5 Changelog</a>
-      </li>
-    </ul>
-  </article>
-  <article class="column">
-    <h2>Help</h2>
-    <ul>
-      <li>
-        <a href="https://elixirforum.com/c/phoenix-forum">Forum</a>
-      </li>
-      <li>
-        <a href="https://webchat.freenode.net/?channels=elixir-lang">#elixir-lang on Freenode IRC</a>
-      </li>
-      <li>
-        <a href="https://twitter.com/elixirphoenix">Twitter @elixirphoenix</a>
-      </li>
-      <li>
-        <a href="https://elixir-slackin.herokuapp.com/">Elixir on Slack</a>
-      </li>
-    </ul>
-  </article>
+    <%= f = form_for :download, Routes.page_path(@socket, :download), method: "get"%>
+      <%= hidden_input f, :search,  value: @query %>
+      <%= hidden_input f, :sort_field, value: @sort_field %>
+      <%= hidden_input f, :sort_order, value: @sort_order %>
+
+      <%= submit "Download CSV", class: "btn"%>
+    </form>
+  </div>
+
+  <%= if @page.entries != [] do%>
+    <p>(s*) - Click on the field to sort the results</p>
+    <table>
+      <thead>
+        <tr>
+          <%= for {col, sorteable} <- @cols do %>
+            <%= if sorteable do %>
+              <th><%= live_patch col<>"(s*)", to: Routes.live_path(@socket, ExrushWeb.PageLive, %{sort_by: col}) %></th>
+            <% else %>
+              <th><%= col %></th>
+            <% end %>
+          <% end %>
+        </tr>
+      </thead>
+
+        <%= for item <- @page.entries do %>
+          <tbody>
+            <%= for {col, _} <- @cols do %>
+              <td><%= item[col] %></td>
+            <% end %>
+          </tbody>
+        <% end %>
+    </table>
+  <% else %>
+    <h2>No results</h2>
+  <% end %>
+
+  <%= if @page.page_number > 1 do %>
+    <%= live_patch "Prev Page", to: Routes.live_path(@socket, ExrushWeb.PageLive, page: @page.page_number - 1), class: "button", style: "margin-right: 10px;" %>
+  <% end %>
+  <%= if @page.page_number < @page.total_pages do %>
+    <%= live_patch "Next Page", to: Routes.live_path(@socket, ExrushWeb.PageLive, page: @page.page_number + 1), class: "button", style: "margin-left: 10px;" %>
+  <% end %>
+
 </section>

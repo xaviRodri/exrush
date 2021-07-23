@@ -1,6 +1,8 @@
 defmodule ExrushTest do
   use ExUnit.Case
 
+  @test_data_count 10
+
   describe "read_rushing/1" do
     test "Reading a file that exists returns its decoded data" do
       assert [
@@ -42,6 +44,12 @@ defmodule ExrushTest do
       assert [] = result
     end
 
+    test "Searching with an empty string will return all the entries" do
+      result = Exrush.player_filter("")
+
+      assert Enum.count(result) == @test_data_count
+    end
+
     test "Searching with something that is not a binary will return an empty list" do
       result = Exrush.player_filter(1234)
 
@@ -68,6 +76,12 @@ defmodule ExrushTest do
 
       assert [] = result1
       assert [] = result2
+    end
+
+    test "Sorting without a field will return the list provided without changes" do
+      result = Exrush.sort(nil, :asc)
+
+      assert Exrush.get_rushing() == result
     end
   end
 

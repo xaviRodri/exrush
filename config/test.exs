@@ -8,3 +8,6 @@ config :exrush, ExrushWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+# JSON file path
+config :exrush, json_path: "priv/rushing_test.json"
