@@ -18,7 +18,7 @@ defmodule ExrushWeb.Router do
     pipe_through(:browser)
 
     live("/", PageLive)
-    get("/dowload", PageController, :download)
+    get("/download", PageController, :download)
   end
 
   # Other scopes may use custom stacks.
